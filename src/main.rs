@@ -462,32 +462,4 @@ DEFINITIONS --------------------------------
     println!("All even: {}", all_even); // Output: All even: true
     println!("Any odd: {}", any_odd); // Output: Any odd: false
 
-
-    /* 
-    let string = String::from("
-    Joshua,Tippy,05/10/2003
-    John,Doe,09/26/2001
-    Jane,Doe,04/20/1985");
-
-    let people: Vec<Person> = string
-        .lines() // Get an iterator over the lines
-        .filter_map(|line| {
-            let parts: Vec<&str> = line.split(',').collect();
-            // Only create a People struct if we have exactly 3 parts
-            if parts.len() == 3 {
-                Some(Person {
-                    first_name: parts[0].trim().to_string(),
-                    last_name: parts[1].trim().to_string(),
-                    birthday: parts[2].trim().to_string(),
-                })
-            } else {
-                // Return None to filter out invalid lines
-                None
-            }
-        })
-        .collect(); // Collect the results into a Vec<People>
-
-
-    println!("{:?}", people);
-    */
 }
