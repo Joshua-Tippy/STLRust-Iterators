@@ -84,12 +84,12 @@ DEFINITIONS --------------------------------
         let vec = vec![1, 2, 3];
         let iter = vec.into_iter(); // `vec` is consumed here
         // `vec` cannot be used here anymore; this would cause a compile-time error
-
         //println!("Original Vec: {:?}", vec);
 
         let doubled: Vec<i32> = iter.map(|x| x * 2).collect();
         println!("Doubled Vec: {:?}", doubled);
 
+        //vec still cannot be used here even after consuming the iterator
         //println!("Original Vec: {:?}", vec);
     }
 //-------------------------------------------------------
@@ -109,7 +109,7 @@ DEFINITIONS --------------------------------
         let mut vec = vec![1, 2, 3];
         let iter = vec.iter_mut();
 
-        //we can not reference the original vec after creating the iterator becuase it holds a mutable reference to vec.  
+        //we cannot reference the original vec after creating the iterator becuase it holds a mutable reference to vec.  
         //let newvec: &Vec<i32> = &vec;
 
         iter.for_each(|v| *v *= 2);
@@ -156,6 +156,7 @@ DEFINITIONS --------------------------------
 
         let mut m = MyStruct { vec: vec![1, 2, 3, 4] };
         
+        //you can perform other operations on this, but i kept it simple for this example
         m.into_iter().for_each(|v| println!("{:?}", v));
     }
 
@@ -177,9 +178,11 @@ DEFINITIONS --------------------------------
             lastname: String,
             occupation: String,
         }
+        //we need to create a custom iterator here in order to iterate through the fields in Person
         struct PersonIterator {
             values: Vec<String>
         }
+        //here we implement the Iterator trait for our custom iterator so rust recognises it as one
         impl Iterator for PersonIterator {
             type Item = String;
             fn next(&mut self) -> Option<Self::Item> {
@@ -190,6 +193,8 @@ DEFINITIONS --------------------------------
                 }
             }
         }
+        //next we need to implement IntoIterator for Person.  
+        //this is so that when we call .intoiter() on an instance of Person it knows to use our custom iterator.
         impl IntoIterator for Person {
             type Item = String;
             type IntoIter = PersonIterator;
@@ -227,7 +232,7 @@ DEFINITIONS --------------------------------
     //fold
     use std::collections::HashMap;
     {
-        println!("Example 13: ");
+        println!("Iter Method Example 1: ");
         let words = vec![
             "apple", "banana", "apple", "orange", 
             "banana", "apple", "kiwi", "orange",
@@ -255,12 +260,15 @@ DEFINITIONS --------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------
     std::iter::repeat(()).take(5).for_each(|_| println!());
     //zip
-    println!("Example 14: ");
+    println!("Iter Method Example 2: ");
+    //if we had two collections we wanted to iterate over simultaneously we could use .zip()
+
     let names = vec!["Alice", "Bob", "Charlie"];
     let ages = vec![30, 25, 35];
     let people: Vec<(&str, u32)> = names.into_iter().zip(ages).collect();
     println!("{:?}", people); // Output: [("Alice", 30), ("Bob", 25), ("Charlie", 35)]
 
+    //note that we are using .into_iter() so names and ages are both no longer usable after creating our iterator
     //println!("{:?}", ages); 
     //--------------------------------------------------------------------------------------------------------------------------------------
 
@@ -272,7 +280,7 @@ DEFINITIONS --------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------
     std::iter::repeat(()).take(5).for_each(|_| println!());
     //chain
-    println!("Example 15: ");
+    println!("Iter Method Example 3: ");
     let a = vec![1, 2, 3];
     let b = vec![4, 5, 6];
     let combined: Vec<i32> = a.into_iter().chain(b).map(|x| x * 2).collect();
@@ -290,7 +298,9 @@ DEFINITIONS --------------------------------
     //--------------------------------------------------------------------------------------------------------------------------------------
     std::iter::repeat(()).take(5).for_each(|_| println!());
     //peekable and peek
-    println!("Example 16: ");
+    //this example is technically broken, it shouldnt drop the last element in the collection.  
+    //but its still a good use case for peekable and peek.  
+    println!("Iter Method Example 4: ");
     {
         let mut vec = vec![2, 1, 2, 8, 5, 7, 8, 5, 6, 4, 8, 8, 9, 10];        
         println!("before removing values: {:?}", vec);
@@ -301,6 +311,7 @@ DEFINITIONS --------------------------------
         while let Some(value) = iter.next() {
             // Peek at the next value without consuming it
             if let Some(next_value) = iter.peek() {
+                // if the next value isnt the same as the current value we keep it. this gets us all the unique values
                 if *next_value != value {
                     results.push(*value);
                 }
@@ -308,7 +319,6 @@ DEFINITIONS --------------------------------
                 println!("No next value (end of iterator).");
             }
         }
-        
         println!("after removing values: {:?}", results);
     }
     //--------------------------------------------------------------------------------------------------------------------------------------
@@ -446,7 +456,7 @@ DEFINITIONS --------------------------------
     std::iter::repeat(()).take(5).for_each(|_| println!());
     //all and any
     println!("Example 12: ");
-    let numbers: Vec<i32> = vec![];
+    let numbers: Vec<i32> = vec![1, 2, 3, 4];
     let all_even = numbers.iter().all(|&x| x % 2 == 0);
     let any_odd = numbers.iter().any(|&x| x % 2 != 0);
     println!("All even: {}", all_even); // Output: All even: true
